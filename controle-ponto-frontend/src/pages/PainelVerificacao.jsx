@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import * as XLSX from 'xlsx'; // <-- ADICIONADO
 
 function PainelVerificacao() {
   const [entradas, setEntradas] = useState([]);
   const [faltantes, setFaltantes] = useState([]);
   const [erro, setErro] = useState('');
   const API_URL = import.meta.env.VITE_API_URL;
+
 
   useEffect(() => {
     buscarDados();
@@ -23,8 +25,40 @@ function PainelVerificacao() {
     }
   };
 
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/pontos/hoje`)
+      .then((res) => setRegistros(res.data))
+      .catch((err) => console.error(err));
+  }, []);
+
+  // Função para exportar Excel
+  const exportarExcel = () => {
+    const dados = registros.map((r) => ({
+      Nome: r.Funcionario?.nome,
+      Cargo: r.Funcionario?.cargo,
+      Departamento: r.Funcionario?.departamento,
+      Tipo: r.tipo,
+      DataHora: new Date(r.data_hora).toLocaleString('pt-BR'),
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dados);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Registros');
+    XLSX.writeFile(workbook, 'registros-ponto.xlsx');
+  };
+
+
+
+
   return (
+    
     <div>
+      {/* BOTÃO DE EXPORTAÇÃO */}
+      <button onClick={exportarExcel} style={{ marginBottom: '1rem' }}>
+        📁 Exportar para Excel
+      </button>
+      
       <h2>Entradas de Hoje</h2>
       {entradas.length === 0 ? (
         <p>Nenhuma entrada registrada ainda.</p>

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import RegistroPonto from './pages/RegistroPonto';
 import PainelVerificacao from './pages/PainelVerificacao';
 import CadastroFuncionario from './pages/CadastroFuncionario';
+import RegistroPagamento from './pages/RegistroPagamento';
+
 
 function App() {
   const [tela, setTela] = useState('registro');
@@ -38,12 +40,16 @@ function App() {
         <button onClick={() => setTela('cadastro')} style={botaoStyle(tela === 'cadastro')}>
           Cadastro de Funcionário
         </button>
+        <button onClick={() => setTela('pagamento')} style={botaoStyle(tela === 'pagamento')}>
+        Registro de Pagamento
+        </button>
       </div>
 
 
       {tela === 'registro' && <RegistroPonto />}
       {tela === 'painel' && <PainelVerificacao />}
       {tela === 'cadastro' && <CadastroFuncionario />}
+      {tela === 'pagamento' && <RegistroPagamento />}
     </div>
   );
 }
