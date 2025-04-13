@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import RegistroPonto from './pages/RegistroPonto';
+import PainelVerificacao from './pages/PainelVerificacao';
+import CadastroFuncionario from './pages/CadastroFuncionario';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [tela, setTela] = useState('registro');
+
+  const botaoStyle = (ativo) => ({
+    marginRight: '10px',
+    backgroundColor: ativo ? '#007bff' : '#ccc',
+    color: '#fff',
+    padding: '0.5rem 1rem',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer'
+  });
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div style={{ padding: '2rem', fontFamily: 'Arial, sans-serif' }}>
+      <h1 style={{ marginBottom: '1.5rem' }}>📋 Controle de Ponto</h1>
+
+      <div style={{ marginBottom: '2rem' }}>
+        <button
+          onClick={() => setTela('registro')}
+          style={botaoStyle(tela === 'registro')}
+        >
+          Registrar Ponto
         </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+        <button
+          onClick={() => setTela('painel')}
+          style={botaoStyle(tela === 'painel')}
+        >
+          Painel de Verificação
+        </button>
+        
+        // Adicione mais um botão:
+        <button onClick={() => setTela('cadastro')} style={botaoStyle(tela === 'cadastro')}>
+          Cadastro de Funcionário
+        </button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+
+
+      {tela === 'registro' && <RegistroPonto />}
+      {tela === 'painel' && <PainelVerificacao />}
+      {tela === 'cadastro' && <CadastroFuncionario />}
+    </div>
+  );
 }
 
-export default App
+export default App;
