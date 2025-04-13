@@ -34,7 +34,7 @@ function App() {
           Painel de Verificação
         </button>
         
-        // Adicione mais um botão:
+        
         <button onClick={() => setTela('cadastro')} style={botaoStyle(tela === 'cadastro')}>
           Cadastro de Funcionário
         </button>
