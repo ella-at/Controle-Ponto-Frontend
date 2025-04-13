@@ -55,9 +55,13 @@ function PainelVerificacao() {
     
     <div>
       {/* BOTÃO DE EXPORTAÇÃO */}
-      <button onClick={exportarExcel} style={{ marginBottom: '1rem' }}>
-        📁 Exportar para Excel
-      </button>
+      <button
+      onClick={() => window.open(`${import.meta.env.VITE_API_URL}/pontos/exportar`, '_blank')}
+      style={{ marginBottom: '1rem' }}
+    >
+      📁 Exportar para Excel
+    </button>
+
       
       <h2>Entradas de Hoje</h2>
       {entradas.length === 0 ? (

@@ -14,18 +14,38 @@ function RegistroPonto() {
   const [fotoBase64, setFotoBase64] = useState('');
   const [assinaturaBase64, setAssinaturaBase64] = useState('');
   const [mensagem, setMensagem] = useState('');
+  const [pontosHoje, setPontosHoje] = useState([]);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     buscarFuncionarios();
+    carregarPontosHoje();
   }, []);
+
+  const carregarPontosHoje = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/pontos/hoje`);
+      setPontosHoje(res.data);
+    } catch (err) {
+      console.error('Erro ao buscar pontos do dia:', err);
+    }
+  };
+
+  const obterStatusPonto = (funcionarioId) => {
+    const registros = pontosHoje.filter(p => p.funcionario_id === funcionarioId);
+    const tipos = registros.map(p => p.tipo);
+
+    if (tipos.includes('entrada') && tipos.includes('saida')) return '✅ Entrada & Saída realizada';
+    if (tipos.includes('entrada')) return '✅ Entrada realizada';
+    return '⚠️ Registro pendente';
+  };
 
   const buscarFuncionarios = async () => {
     try {
       const res = await axios.get(`${API_URL}/funcionarios`);
       setFuncionarios(res.data);
-      setResultadoBusca(res.data); 
+      setResultadoBusca(res.data);
     } catch (err) {
       console.error(err);
       setMensagem('Erro ao buscar funcionários');
@@ -70,6 +90,7 @@ function RegistroPonto() {
       setFuncionarioSelecionado(null);
       setFotoBase64('');
       setAssinaturaBase64('');
+      carregarPontosHoje(); // Atualiza o status após registrar
     } catch (err) {
       console.error(err);
       setMensagem('Erro ao registrar ponto.');
@@ -142,7 +163,10 @@ function RegistroPonto() {
                   marginBottom: '10px',
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
                 }}>
-                  <strong>{f.nome}</strong> — {f.cargo} ({f.departamento})
+                  <strong>{f.nome}</strong> — {f.cargo} ({f.departamento})<br />
+                  <span style={{ color: obterStatusPonto(f.id).includes('pendente') ? 'orange' : 'green' }}>
+                    Status: {obterStatusPonto(f.id)}
+                  </span>
                   <br />
                   <button onClick={() => setFuncionarioSelecionado(f)} style={{ marginTop: '5px' }}>Selecionar</button>
                 </li>
@@ -167,6 +191,14 @@ function RegistroPonto() {
 
           <WebcamCapture onCapture={setFotoBase64} />
           <SignatureCanvas onSignature={setAssinaturaBase64} />
+
+          <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+            <strong>{funcionarioSelecionado.nome}</strong><br />
+            Cargo: {funcionarioSelecionado.cargo} – Departamento: {funcionarioSelecionado.departamento} <br />
+            <span style={{ color: obterStatusPonto(funcionarioSelecionado.id).includes('pendente') ? 'orange' : 'green' }}>
+              Status: {obterStatusPonto(funcionarioSelecionado.id)}
+            </span>
+          </div>
 
           <button type="submit" style={{ marginTop: '1rem', padding: '10px 20px' }}>
             Registrar Ponto

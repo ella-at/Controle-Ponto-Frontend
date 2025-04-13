@@ -5,6 +5,7 @@ function CadastroFuncionario() {
   const [nome, setNome] = useState('');
   const [cargo, setCargo] = useState('');
   const [departamento, setDepartamento] = useState('');
+  const [pix, setPix] = useState('');
   const [mensagem, setMensagem] = useState('');
   const [funcionarios, setFuncionarios] = useState([]);
   const [editandoId, setEditandoId] = useState(null);
@@ -28,6 +29,7 @@ function CadastroFuncionario() {
     setNome('');
     setCargo('');
     setDepartamento('');
+    setPix('');
     setEditandoId(null);
   };
 
@@ -40,21 +42,13 @@ function CadastroFuncionario() {
     }
 
     try {
+      const dados = { nome, cargo, departamento, pix };
+
       if (editandoId) {
-        // Atualizar funcionário
-        await axios.put(`${API_URL}/funcionarios/${editandoId}`, {
-          nome,
-          cargo,
-          departamento,
-        });
+        await axios.put(`${API_URL}/funcionarios/${editandoId}`, dados);
         setMensagem('Funcionário atualizado com sucesso!');
       } else {
-        // Criar novo funcionário
-        await axios.post(`${API_URL}/funcionarios`, {
-          nome,
-          cargo,
-          departamento,
-        });
+        await axios.post(`${API_URL}/funcionarios`, dados);
         setMensagem('Funcionário cadastrado com sucesso!');
       }
 
@@ -70,6 +64,7 @@ function CadastroFuncionario() {
     setNome(funcionario.nome);
     setCargo(funcionario.cargo);
     setDepartamento(funcionario.departamento);
+    setPix(funcionario.pix || '');
     setEditandoId(funcionario.id);
   };
 
@@ -93,21 +88,26 @@ function CadastroFuncionario() {
       <form onSubmit={handleSubmit}>
         <label>Nome:</label>
         <input value={nome} onChange={(e) => setNome(e.target.value)} required />
-
         <br />
 
         <label>Cargo:</label>
         <input value={cargo} onChange={(e) => setCargo(e.target.value)} />
-
         <br />
-
 
         <label>Departamento:</label>
         <input value={departamento} onChange={(e) => setDepartamento(e.target.value)} />
-
         <br />
+
+        <label>PIX:</label>
+        <input value={pix} onChange={(e) => setPix(e.target.value)} />
+        <br />
+
         <button type="submit">{editandoId ? 'Atualizar' : 'Cadastrar'}</button>
-        {editandoId && <button onClick={limparFormulario} style={{ marginLeft: '10px' }}>Cancelar</button>}
+        {editandoId && (
+          <button onClick={limparFormulario} style={{ marginLeft: '10px' }}>
+            Cancelar
+          </button>
+        )}
       </form>
 
       {mensagem && (
@@ -120,7 +120,8 @@ function CadastroFuncionario() {
       <ul>
         {funcionarios.map((f) => (
           <li key={f.id}>
-            <strong>{f.nome}</strong> – {f.cargo} ({f.departamento})
+            <strong>{f.nome}</strong> – {f.cargo} ({f.departamento})<br />
+            PIX: {f.pix || 'não informado'}
             <br />
             <button onClick={() => iniciarEdicao(f)}>✏️ Editar</button>
             <button onClick={() => excluirFuncionario(f.id)} style={{ marginLeft: '10px' }}>
