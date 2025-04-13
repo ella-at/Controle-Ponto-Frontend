@@ -5,12 +5,33 @@ import PainelVerificacao from './pages/PainelVerificacao';
 function App() {
   const [tela, setTela] = useState('registro');
 
+  const botaoStyle = (ativo) => ({
+    marginRight: '10px',
+    backgroundColor: ativo ? '#007bff' : '#ccc',
+    color: '#fff',
+    padding: '0.5rem 1rem',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer'
+  });
+
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Controle de Ponto</h1>
-      <div style={{ marginBottom: '1rem' }}>
-        <button onClick={() => setTela('registro')}>Registrar Ponto</button>
-        <button onClick={() => setTela('painel')}>Painel de Verificação</button>
+    <div style={{ padding: '2rem', fontFamily: 'Arial, sans-serif' }}>
+      <h1 style={{ marginBottom: '1.5rem' }}>📋 Controle de Ponto</h1>
+
+      <div style={{ marginBottom: '2rem' }}>
+        <button
+          onClick={() => setTela('registro')}
+          style={botaoStyle(tela === 'registro')}
+        >
+          Registrar Ponto
+        </button>
+        <button
+          onClick={() => setTela('painel')}
+          style={botaoStyle(tela === 'painel')}
+        >
+          Painel de Verificação
+        </button>
       </div>
 
       {tela === 'registro' && <RegistroPonto />}
