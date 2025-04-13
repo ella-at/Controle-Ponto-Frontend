@@ -111,45 +111,56 @@ function RegistroPonto() {
   const departamentosUnicos = [...new Set(funcionarios.map(f => f.departamento).filter(Boolean))];
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>🕒 Registro de Ponto</h2>
+    <div className="max-w-4xl mx-auto px-4 py-8 font-sans">
+    <h2 className="text-3xl font-semibold text-center text-blue-700 mb-6">🕒 Registro de Ponto</h2>
 
-      {!funcionarioSelecionado ? (
-        <>
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
-            <input
-              type="text"
-              placeholder="Buscar por nome"
-              value={buscaNome}
-              onChange={(e) => setBuscaNome(e.target.value)}
-              style={{ flex: '1', padding: '8px' }}
-            />
-            <select
-              value={filtroCargo}
-              onChange={(e) => setFiltroCargo(e.target.value)}
-              style={{ padding: '8px' }}
-            >
-              <option value="">Todos os cargos</option>
-              {cargosUnicos.map((cargo, idx) => (
-                <option key={idx} value={cargo}>{cargo}</option>
-              ))}
-            </select>
-            <select
-              value={filtroDepartamento}
-              onChange={(e) => setFiltroDepartamento(e.target.value)}
-              style={{ padding: '8px' }}
-            >
-              <option value="">Todos os departamentos</option>
-              {departamentosUnicos.map((dep, idx) => (
-                <option key={idx} value={dep}>{dep}</option>
-              ))}
-            </select>
-          </div>
+    {!funcionarioSelecionado ? (
+      <>
+        {/* Filtros */}
+        <div className="flex flex-wrap gap-4 mb-4">
+          <input
+            type="text"
+            placeholder="Buscar por nome"
+            value={buscaNome}
+            onChange={(e) => setBuscaNome(e.target.value)}
+            className="flex-1 px-4 py-2 border rounded-md shadow-sm"
+          />
+          <select
+            value={filtroCargo}
+            onChange={(e) => setFiltroCargo(e.target.value)}
+            className="px-4 py-2 border rounded-md shadow-sm"
+          >
+            <option value="">Todos os cargos</option>
+            {cargosUnicos.map((cargo, idx) => (
+              <option key={idx} value={cargo}>{cargo}</option>
+            ))}
+          </select>
+          <select
+            value={filtroDepartamento}
+            onChange={(e) => setFiltroDepartamento(e.target.value)}
+            className="px-4 py-2 border rounded-md shadow-sm"
+          >
+            <option value="">Todos os departamentos</option>
+            {departamentosUnicos.map((dep, idx) => (
+              <option key={idx} value={dep}>{dep}</option>
+            ))}
+          </select>
+        </div>
 
-          <div style={{ marginBottom: '20px' }}>
-            <button onClick={handleBuscar} style={{ marginRight: '10px', padding: '8px 12px' }}>🔍 Buscar</button>
-            <button onClick={handleLimpar} style={{ padding: '8px 12px' }}>🧼 Limpar Filtro</button>
-          </div>
+        <div className="mb-6">
+          <button
+            onClick={handleBuscar}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mr-2"
+          >
+            🔍 Buscar
+          </button>
+          <button
+            onClick={handleLimpar}
+            className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+          >
+            🧼 Limpar Filtro
+          </button>
+        </div>
 
           {resultadoBusca.length === 0 ? (
             <p style={{ color: 'gray' }}>Nenhum funcionário encontrado.</p>
