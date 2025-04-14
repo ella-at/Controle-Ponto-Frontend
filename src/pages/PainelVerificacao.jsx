@@ -86,18 +86,18 @@ function PainelVerificacao() {
                 <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                   {p.foto && (
                     <img 
-                    src={`${API_URL}/${p.foto?.replace(/^\/?uploads/, 'uploads')}`}
-                    alt="foto"
-                    width="100"
-                    style={{ borderRadius: '4px', objectFit: 'cover' }}
+                      src={p.foto}
+                      alt="foto"
+                      width="100"
+                      style={{ borderRadius: '4px', objectFit: 'cover' }}
                     />
                   )}
                   {p.assinatura && (
                     <img
-                    src={`${API_URL}/${p.assinatura?.replace(/^\/?uploads/, 'uploads')}`}
-                    alt="assinatura"
-                    width="100"
-                    style={{ borderRadius: '4px', objectFit: 'contain' }}
+                      src={p.assinatura}
+                      alt="assinatura"
+                      width="100"
+                      style={{ borderRadius: '4px', objectFit: 'contain' }}
                     />
                   )}
                 </div>
