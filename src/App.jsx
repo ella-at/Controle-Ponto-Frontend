@@ -3,6 +3,7 @@ import RegistroPonto from './pages/RegistroPonto';
 import PainelVerificacao from './pages/PainelVerificacao';
 import CadastroFuncionario from './pages/CadastroFuncionario';
 import RegistroPagamento from './pages/RegistroPagamento';
+import AssinaturaMobile from './pages/AssinaturaMobile';
 
 
 function App() {

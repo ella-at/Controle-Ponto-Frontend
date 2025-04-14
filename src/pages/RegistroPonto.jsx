@@ -202,6 +202,23 @@ function RegistroPonto() {
 
           <WebcamCapture onCapture={setFotoBase64} />
           <SignatureCanvas onSignature={setAssinaturaBase64} />
+          <a
+            href={`/assinatura-mobile?id=${funcionarioSelecionado.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-block',
+              marginTop: '10px',
+              backgroundColor: '#007bff',
+              color: '#fff',
+              padding: '8px 12px',
+              borderRadius: '4px',
+              textDecoration: 'none'
+            }}
+          >
+            ✍️ Assinar por celular/iPad
+          </a>
+
 
           <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
             <strong>{funcionarioSelecionado.nome}</strong><br />
