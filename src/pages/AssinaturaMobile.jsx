@@ -25,7 +25,7 @@ function AssinaturaMobile() {
       formData.append('tipo', tipo);
       formData.append('assinatura', new File([blob], 'assinatura.png', { type: 'image/png' }));
 
-      await axios.post(`${API_URL}/assinatura-mobile`, formData);
+      await axios.post(`${import.meta.env.VITE_API_URL}/assinatura-mobile`, formData);
       alert('Assinatura enviada com sucesso!');
       window.close(); // fecha a aba no celular
     } catch (err) {
