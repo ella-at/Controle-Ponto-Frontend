@@ -105,6 +105,10 @@ function RegistroPagamento() {
           style={{ padding: '6px', marginRight: '10px' }}
         />
         <button onClick={carregarRegistros} style={{ padding: '6px 12px' }}>🔍 Buscar</button>
+        <button onClick={() => window.open(`${API_URL}/pagamentos/pendentes/excel`, '_blank')}>
+        📥 Exportar Pendentes
+        </button>
+
       </div>
 
       {registros.map((r, i) => (
@@ -128,7 +132,12 @@ function RegistroPagamento() {
 
           {r.pagamento?.comprovante && (
             <p>
-              📎 <a href={`${API_URL}/${r.pagamento.comprovante}`} target="_blank">Ver Comprovante</a>
+              <button
+              onClick={() => window.open(`${API_URL}/${pagamento.comprovante}`, '_blank', 'width=800,height=600')}
+              style={{ marginTop: '5px' }}
+              >
+                📎 Ver Comprovante
+              </button>
             </p>
           )}
 
