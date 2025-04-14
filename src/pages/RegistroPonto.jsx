@@ -15,12 +15,14 @@ function RegistroPonto() {
   const [assinaturaBase64, setAssinaturaBase64] = useState('');
   const [mensagem, setMensagem] = useState('');
   const [pontosHoje, setPontosHoje] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     buscarFuncionarios();
     carregarPontosHoje();
+    setIsMobile(window.innerWidth < 768);
   }, []);
 
   const carregarPontosHoje = async () => {
@@ -201,23 +203,18 @@ function RegistroPonto() {
           <br /><br />
 
           <WebcamCapture onCapture={setFotoBase64} />
-          <SignatureCanvas onSignature={setAssinaturaBase64} />
-          <a
-            href={`/assinatura-mobile?id=${funcionarioSelecionado.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-block',
-              marginTop: '10px',
-              backgroundColor: '#007bff',
-              color: '#fff',
-              padding: '8px 12px',
-              borderRadius: '4px',
-              textDecoration: 'none'
-            }}
-          >
-            ✍️ Assinar por celular/iPad
-          </a>
+          <div style={{ marginTop: '20px' }}>
+            <label><strong>Assinatura:</strong></label>
+            <div style={{
+              maxWidth: isMobile ? '100%' : '320px',
+              margin: isMobile ? '10px auto' : '10px 0',
+              border: '1px solid #ccc',
+              padding: '10px'
+            }}>
+              <SignatureCanvas onSignature={setAssinaturaBase64} />
+            </div>
+          </div>
+
 
 
           <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
