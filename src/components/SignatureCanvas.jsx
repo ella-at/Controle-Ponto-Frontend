@@ -20,7 +20,9 @@ function SignatureCanvas({ onSignature }) {
         ref={canvasRef}
         width={300}
         height={150}
-        style={{ border: '1px solid black' }}
+        style={{ border: '1px solid #ccc',
+          touchAction: 'none'
+        }}
         onMouseUp={handleMouseUp}
         onTouchEnd={handleMouseUp}
         onMouseDown={(e) => {
