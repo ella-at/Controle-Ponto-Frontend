@@ -153,7 +153,7 @@ function RegistroPagamento() {
           Saída: {new Date(r.saida).toLocaleTimeString('pt-BR')}<br />
 
           <p>
-            <strong>Status:</strong> {r.pagamento ? '✅ Pago' : '❌ Pendente'}
+            <strong>Status Pagamento:</strong> {r.pagamento ? '✅ Pago' : '❌ Pendente'}
           </p>
 
           {r.pagamento?.comprovante && (
