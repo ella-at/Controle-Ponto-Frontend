@@ -7,7 +7,8 @@ function RegistroPagamento() {
   const [mensagem, setMensagem] = useState('');
   const [comprovantes, setComprovantes] = useState({});
   const [dataSelecionada, setDataSelecionada] = useState(new Date().toISOString().slice(0, 10));
-  const [saidaManual, setSaidaManual] = useState({ pontoEntradaId: null, horario: '', responsavel: '' });
+  const [saidaManual, setSaidaManual] = useState({ horario: '', responsavel: '' });
+  const [modalFuncionario, setModalFuncionario] = useState(null);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -46,7 +47,6 @@ function RegistroPagamento() {
         }
       }
 
-      // Buscar pagamentos
       for (const id in agrupados) {
         const resPag = await axios.get(`${API_URL}/pagamentos/funcionario/${id}`);
         const pagamentos = resPag.data;
@@ -61,11 +61,11 @@ function RegistroPagamento() {
       }
 
       const todos = Object.values(agrupados);
-      const comEntradaSaida = todos.filter(r => r.entrada && r.saida);
-      const apenasEntrada = todos.filter(r => r.entrada && !r.saida);
+      const saidasPendentes = todos.filter(r => r.entrada && !r.saida);
+      const completos = todos.filter(r => r.entrada && r.saida);
 
-      setRegistros(comEntradaSaida);
-      setPendentesSaida(apenasEntrada);
+      setPendentesSaida(saidasPendentes);
+      setRegistros(completos);
     } catch (err) {
       console.error(err);
       setMensagem('Erro ao carregar registros.');
@@ -98,19 +98,18 @@ function RegistroPagamento() {
     setComprovantes({ ...comprovantes, [pontoId]: file });
   };
 
-  const registrarSaidaManual = async () => {
-    const { pontoEntradaId, horario, responsavel } = saidaManual;
-    if (!pontoEntradaId || !horario || !responsavel) return;
-
+  const registrarSaidaAdm = async () => {
     try {
+      const horarioCompleto = `${dataSelecionada}T${saidaManual.horario}`;
       await axios.post(`${API_URL}/pontos`, {
-        funcionario_id: pontoEntradaId, // neste caso é o ID do ponto de entrada, para pegar o funcionário
+        funcionario_id: modalFuncionario.id,
         tipo: 'saida',
-        data_hora: horario,
-        responsavel
+        responsavel_saida_adm: saidaManual.responsavel,
+        data_hora: horarioCompleto
       });
-      setMensagem('Saída administrativa registrada com sucesso!');
-      setSaidaManual({ pontoEntradaId: null, horario: '', responsavel: '' });
+      setModalFuncionario(null);
+      setSaidaManual({ horario: '', responsavel: '' });
+      setMensagem('Saída administrativa registrada!');
       carregarRegistros();
     } catch (err) {
       console.error(err);
@@ -136,20 +135,50 @@ function RegistroPagamento() {
         </button>
       </div>
 
-      <h3>✅ Funcionários com Entrada & Saída</h3>
+      {pendentesSaida.length > 0 && (
+        <div style={{ marginBottom: '2rem' }}>
+          <h3>⚠️ Funcionários com saída pendente</h3>
+          {pendentesSaida.map((f, i) => (
+            <div key={i} style={{
+              padding: '10px',
+              marginBottom: '10px',
+              border: '1px solid orange',
+              borderRadius: '6px',
+              backgroundColor: '#fff7e6'
+            }}>
+              <strong>{f.funcionario?.nome}</strong><br />
+              Entrada: {new Date(f.entrada).toLocaleTimeString('pt-BR')}<br />
+              <button onClick={() => setModalFuncionario(f.funcionario)}>📤 Saída Administrativa</button>
+            </div>
+          ))}
+        </div>
+      )}
+
       {registros.map((r, i) => (
-        <div key={i} style={{ padding: '15px', border: '1px solid #ccc', borderRadius: '8px', marginBottom: '1rem', background: '#f9f9f9' }}>
+        <div key={i} style={{
+          padding: '15px',
+          border: '1px solid #ccc',
+          borderRadius: '8px',
+          marginBottom: '1rem',
+          background: '#f9f9f9',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+        }}>
           <strong>{r.funcionario?.nome}</strong><br />
           Cargo: {r.funcionario?.cargo} – Departamento: {r.funcionario?.departamento}<br />
           PIX: {r.funcionario?.pix || 'Não informado'}<br />
           Entrada: {new Date(r.entrada).toLocaleTimeString('pt-BR')}<br />
           Saída: {new Date(r.saida).toLocaleTimeString('pt-BR')}<br />
 
-          <p><strong>Status:</strong> {r.pagamento ? '✅ Pago' : '❌ Pendente'}</p>
+          <p>
+            <strong>Status:</strong> {r.pagamento ? '✅ Pago' : '❌ Pendente'}
+          </p>
 
           {r.pagamento?.comprovante && (
             <p>
-              <button onClick={() => window.open(r.pagamento.comprovante, '_blank', 'width=800,height=600')} style={{ marginTop: '5px' }}>
+              <button
+                onClick={() => window.open(r.pagamento.comprovante, '_blank', 'width=800,height=600')}
+                style={{ marginTop: '5px' }}
+              >
                 📎 Ver Comprovante
               </button>
             </p>
@@ -157,31 +186,44 @@ function RegistroPagamento() {
 
           {!r.pagamento && (
             <div>
-              <input type="file" accept=".pdf,image/*" onChange={(e) => handleFileChange(r.pontoEntradaId, e.target.files[0])} />
-              <button onClick={() => handleUpload(r.pontoEntradaId, r.funcionario.id)}>Registrar Pagamento</button>
+              <input
+                type="file"
+                accept=".pdf,image/*"
+                onChange={(e) => handleFileChange(r.pontoEntradaId, e.target.files[0])}
+              />
+              <button onClick={() => handleUpload(r.pontoEntradaId, r.funcionario.id)}>
+                Registrar Pagamento
+              </button>
             </div>
           )}
         </div>
       ))}
 
-      <h3 style={{ marginTop: '2rem' }}>⚠️ Funcionários com Entrada sem Saída</h3>
-      {pendentesSaida.map((r, i) => (
-        <div key={i} style={{ padding: '15px', border: '1px solid #f5c518', borderRadius: '8px', marginBottom: '1rem', background: '#fff8e1' }}>
-          <strong>{r.funcionario?.nome}</strong><br />
-          Cargo: {r.funcionario?.cargo} – Departamento: {r.funcionario?.departamento}<br />
-          Entrada: {new Date(r.entrada).toLocaleTimeString('pt-BR')}<br />
-          <p><strong>Status de Saída:</strong> Saída pendente</p>
-
-          <div style={{ marginTop: '10px' }}>
-            <input type="time" value={saidaManual.horario} onChange={(e) => setSaidaManual({ ...saidaManual, horario: e.target.value, pontoEntradaId: r.pontoEntradaId })} style={{ marginRight: '10px' }} />
-            <input type="text" placeholder="Responsável" value={saidaManual.responsavel} onChange={(e) => setSaidaManual({ ...saidaManual, responsavel: e.target.value })} style={{ marginRight: '10px' }} />
-            <button onClick={registrarSaidaManual}>Saída Administrativa</button>
-          </div>
+      {modalFuncionario && (
+        <div style={{ background: '#eee', padding: '20px', borderRadius: '10px', marginBottom: '20px' }}>
+          <h4>Registrar Saída Administrativa para {modalFuncionario.nome}</h4>
+          <input
+            type="time"
+            value={saidaManual.horario}
+            onChange={(e) => setSaidaManual({ ...saidaManual, horario: e.target.value })}
+            style={{ padding: '6px', marginRight: '10px' }}
+          />
+          <input
+            type="text"
+            placeholder="Responsável"
+            value={saidaManual.responsavel}
+            onChange={(e) => setSaidaManual({ ...saidaManual, responsavel: e.target.value })}
+            style={{ padding: '6px', marginRight: '10px' }}
+          />
+          <button onClick={registrarSaidaAdm}>Confirmar</button>
+          <button onClick={() => setModalFuncionario(null)} style={{ marginLeft: '10px' }}>Cancelar</button>
         </div>
-      ))}
+      )}
 
       {mensagem && (
-        <p style={{ color: mensagem.includes('sucesso') ? 'green' : 'red' }}>{mensagem}</p>
+        <p style={{ color: mensagem.includes('sucesso') ? 'green' : 'red' }}>
+          {mensagem}
+        </p>
       )}
     </div>
   );
