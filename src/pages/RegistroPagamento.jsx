@@ -6,12 +6,13 @@ function RegistroPagamento() {
   const [mensagem, setMensagem] = useState('');
   const [comprovantes, setComprovantes] = useState({});
   const [dataSelecionada, setDataSelecionada] = useState(new Date().toISOString().slice(0, 10));
+  const [buscaNome, setBuscaNome] = useState('');
 
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     carregarRegistros();
-  }, []);
+  }, [dataSelecionada]);
 
   const carregarRegistros = async () => {
     try {
@@ -44,22 +45,23 @@ function RegistroPagamento() {
         }
       }
 
-      // Buscar pagamentos
       for (const id in agrupados) {
         const resPag = await axios.get(`${API_URL}/pagamentos/funcionario/${id}`);
         const pagamentos = resPag.data;
-
         const pontoIds = [
           agrupados[id].pontoEntradaId,
           agrupados[id].pontoSaidaId
         ];
-
         const pagamentoUnico = pagamentos.find(p => pontoIds.includes(p.ponto_id));
         agrupados[id].pagamento = pagamentoUnico;
       }
 
-      const filtrados = Object.values(agrupados).filter(r => r.entrada && r.saida);
-      setRegistros(filtrados);
+      const filtrados = Object.values(agrupados).filter(r => r.entrada);
+      const filtradosNome = buscaNome
+        ? filtrados.filter(r => r.funcionario?.nome.toLowerCase().includes(buscaNome.toLowerCase()))
+        : filtrados;
+
+      setRegistros(filtradosNome);
     } catch (err) {
       console.error(err);
       setMensagem('Erro ao carregar registros.');
@@ -104,11 +106,17 @@ function RegistroPagamento() {
           onChange={(e) => setDataSelecionada(e.target.value)}
           style={{ padding: '6px', marginRight: '10px' }}
         />
+        <input
+          type="text"
+          placeholder="Buscar por nome"
+          value={buscaNome}
+          onChange={(e) => setBuscaNome(e.target.value)}
+          style={{ padding: '6px', marginRight: '10px' }}
+        />
         <button onClick={carregarRegistros} style={{ padding: '6px 12px' }}>🔍 Buscar</button>
         <button onClick={() => window.open(`${API_URL}/pagamentos/pendentes/excel`, '_blank')}>
-        📥 Exportar Pendentes
+          📥 Exportar Pendentes
         </button>
-
       </div>
 
       {registros.map((r, i) => (
@@ -124,11 +132,10 @@ function RegistroPagamento() {
           Cargo: {r.funcionario?.cargo} – Departamento: {r.funcionario?.departamento}<br />
           PIX: {r.funcionario?.pix || 'Não informado'}<br />
           Entrada: {new Date(r.entrada).toLocaleTimeString('pt-BR')}<br />
-          Saída: {new Date(r.saida).toLocaleTimeString('pt-BR')}<br />
+          Saída: {r.saida ? new Date(r.saida).toLocaleTimeString('pt-BR') : '---'}<br />
 
-          <p>
-            <strong>Status:</strong> {r.pagamento ? '✅ Pago' : '❌ Pendente'}
-          </p>
+          <p><strong>Status:</strong> {r.pagamento ? '✅ Pago' : '❌ Pendente'}</p>
+          <p><strong>Status de Saída:</strong> {r.saida ? '✅ Realizada' : '⚠️ Saída Pendente'}</p>
 
           {r.pagamento?.comprovante && (
             <p>
@@ -140,7 +147,6 @@ function RegistroPagamento() {
               </button>
             </p>
           )}
-
 
           {!r.pagamento && (
             <div>
