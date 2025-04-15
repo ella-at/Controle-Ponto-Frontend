@@ -101,12 +101,12 @@ function RegistroPagamento() {
   const registrarSaidaAdm = async () => {
     try {
       const horarioCompleto = `${dataSelecionada}T${saidaManual.horario}`;
-      await axios.post(`${API_URL}/pontos`, {
+      await axios.post(`${API_URL}/pontos/saida-administrativa`, {
         funcionario_id: modalFuncionario.id,
-        tipo: 'saida',
-        responsavel_saida_adm: saidaManual.responsavel,
-        data_hora: horarioCompleto
+        data_hora: horarioCompleto,
+        responsavel_saida_adm: saidaManual.responsavel
       });
+      
       setModalFuncionario(null);
       setSaidaManual({ horario: '', responsavel: '' });
       setMensagem('Saída administrativa registrada!');
