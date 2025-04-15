@@ -111,7 +111,24 @@ function CadastroFuncionario() {
       <form onSubmit={handleSubmit} style={styles.form}>
         <input style={styles.input} placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} required />
         <input style={styles.input} placeholder="Cargo" value={cargo} onChange={(e) => setCargo(e.target.value)} />
-        <input style={styles.input} placeholder="Departamento" value={departamento} onChange={(e) => setDepartamento(e.target.value)} />
+        
+        <select
+          style={styles.input}
+          value={departamento}
+          onChange={(e) => setDepartamento(e.target.value)}
+          required
+        >
+          <option value="">Selecione o departamento</option>
+          <option value="Carregadores">Carregadores</option>
+          <option value="Comercial">Comercial</option>
+          <option value="Diretoria">Diretoria</option>
+          <option value="Financeiro">Financeiro</option>
+          <option value="Gerencia">Gerência</option>
+          <option value="Limpeza">Limpeza</option>
+          <option value="Operacional">Operacional</option>
+          <option value="Extra">Extra</option>
+        </select>
+
         <input style={styles.input} placeholder="PIX" value={pix} onChange={(e) => setPix(e.target.value)} />
         <div style={styles.buttonGroup}>
           <button type="submit" style={styles.button}>
