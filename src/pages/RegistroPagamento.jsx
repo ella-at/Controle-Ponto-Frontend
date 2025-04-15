@@ -150,7 +150,13 @@ function RegistroPagamento() {
           Cargo: {r.funcionario?.cargo} – Departamento: {r.funcionario?.departamento}<br />
           PIX: {r.funcionario?.pix || 'Não informado'}<br />
           Entrada: {new Date(r.entrada).toLocaleTimeString('pt-BR')}<br />
-          Saída: {new Date(r.saida).toLocaleTimeString('pt-BR')}<br />
+          Saída: {new Date(r.saida).toLocaleTimeString('pt-BR')}
+          {r.responsavel_saida_adm && (
+            <span style={{ color: 'orange', fontStyle: 'italic' }}>
+              {' '} (Saída administrativa por {r.responsavel_saida_adm})
+            </span>
+          )}<br />
+
 
           <p>
             <strong>Status Pagamento:</strong> {r.pagamento ? '✅ Pago' : '❌ Pendente'}
