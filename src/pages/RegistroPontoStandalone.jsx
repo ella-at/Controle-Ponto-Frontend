@@ -1,65 +1,77 @@
 // src/pages/RegistroPontoPage.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import WebcamCapture from '../components/WebcamCapture';
 import SignatureCanvas from '../components/SignatureCanvas';
 
 function RegistroPontoPage() {
-  const [funcionarios, setFuncionarios] = useState([]);
-  const [buscaNome, setBuscaNome] = useState('');
-  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState(null);
-  const [tipo, setTipo] = useState('entrada');
+  const [nomeBusca, setNomeBusca] = useState('');
+  const [funcionario, setFuncionario] = useState(null);
   const [fotoBase64, setFotoBase64] = useState('');
   const [assinaturaBase64, setAssinaturaBase64] = useState('');
   const [mensagem, setMensagem] = useState('');
-
+  const [isMobile, setIsMobile] = useState(false);
+  const [tipo, setTipo] = useState('entrada');
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    buscarFuncionarios();
+    setIsMobile(window.innerWidth < 768);
   }, []);
 
-  const buscarFuncionarios = async () => {
+  const buscarFuncionario = async () => {
     try {
       const res = await axios.get(`${API_URL}/funcionarios`);
-      setFuncionarios(res.data);
+      const encontrado = res.data.find(f => f.nome.toLowerCase() === nomeBusca.toLowerCase());
+      if (encontrado) {
+        setFuncionario(encontrado);
+        definirTipoPonto(encontrado.id);
+      } else {
+        setMensagem('Funcionário não encontrado');
+      }
     } catch (err) {
-      console.error('Erro ao buscar funcionários:', err);
+      console.error(err);
+      setMensagem('Erro ao buscar funcionário');
     }
   };
 
-  const handleBuscar = () => {
-    const encontrado = funcionarios.find(f => f.nome.toLowerCase().includes(buscaNome.toLowerCase()));
-    if (encontrado) {
-      setFuncionarioSelecionado(encontrado);
-    } else {
-      setMensagem('Funcionário não encontrado');
+  const definirTipoPonto = async (funcionarioId) => {
+    try {
+      const hoje = new Date().toISOString().split('T')[0];
+      const res = await axios.get(`${API_URL}/pontos/por-data?data=${hoje}`);
+      const registros = res.data.filter(p => p.funcionario_id === funcionarioId);
+      const tipos = registros.map(p => p.tipo);
+      if (tipos.includes('entrada') && !tipos.includes('saida')) {
+        setTipo('saida');
+      } else {
+        setTipo('entrada');
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!funcionarioSelecionado || !fotoBase64 || !assinaturaBase64) {
-      setMensagem('Preencha todos os campos, tire a foto e assine.');
+    if (!fotoBase64 || !assinaturaBase64) {
+      setMensagem('Tire a foto e assine para registrar o ponto.');
       return;
     }
-
     try {
       const formData = new FormData();
-      formData.append('funcionario_id', funcionarioSelecionado.id);
+      formData.append('funcionario_id', funcionario.id);
       formData.append('tipo', tipo);
       formData.append('foto', dataURLtoFile(fotoBase64, 'foto.jpg'));
       formData.append('assinatura', dataURLtoFile(assinaturaBase64, 'assinatura.png'));
 
       await axios.post(`${API_URL}/pontos`, formData);
       setMensagem('Registro realizado com sucesso!');
-
-      // Voltar para a tela inicial
-      setFuncionarioSelecionado(null);
-      setBuscaNome('');
-      setFotoBase64('');
-      setAssinaturaBase64('');
+      setTimeout(() => {
+        setFuncionario(null);
+        setFotoBase64('');
+        setAssinaturaBase64('');
+        setMensagem('');
+        setNomeBusca('');
+      }, 2000);
     } catch (err) {
       console.error(err);
       setMensagem('Erro ao registrar ponto.');
@@ -78,54 +90,51 @@ function RegistroPontoPage() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-8 font-sans">
-      {!funcionarioSelecionado ? (
+      {!funcionario ? (
         <div>
-          <h2 className="text-2xl font-semibold text-center mb-6">🔍 Identifique-se</h2>
+          <h2 className="text-2xl font-semibold text-center mb-4">Identifique-se para Registrar o Ponto</h2>
           <input
             type="text"
-            placeholder="Digite seu nome"
-            value={buscaNome}
-            onChange={(e) => setBuscaNome(e.target.value)}
-            className="w-full px-4 py-2 border rounded-md shadow-sm mb-4"
+            placeholder="Digite seu nome completo"
+            value={nomeBusca}
+            onChange={(e) => setNomeBusca(e.target.value)}
+            className="w-full px-4 py-2 border rounded mb-4"
           />
-          <button
-            onClick={handleBuscar}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
-          >
-            Buscar
+          <button onClick={buscarFuncionario} className="w-full bg-blue-600 text-white py-2 rounded">
+            Acessar Registro de Ponto
           </button>
-          {mensagem && (
-            <p className="mt-4 text-center" style={{ color: 'red' }}>{mensagem}</p>
-          )}
+          {mensagem && <p className="text-center mt-4 text-red-600">{mensagem}</p>}
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
-          <h2 className="text-xl font-bold mb-4 text-center">Olá, {funcionarioSelecionado.nome}</h2>
-          <label>Tipo de Ponto:</label>
-          <select value={tipo} onChange={(e) => setTipo(e.target.value)} className="block mb-4 mt-1 px-3 py-2 border rounded">
-            <option value="entrada">Entrada</option>
-            <option value="saida">Saída</option>
-          </select>
+          <p className="mb-2 text-center text-lg font-semibold">
+            Olá, {funcionario.nome}! ({tipo.toUpperCase()})
+          </p>
 
           <WebcamCapture onCapture={setFotoBase64} />
 
           <div style={{ marginTop: '20px' }}>
             <label><strong>Assinatura:</strong></label>
-            <div style={{ border: '1px solid #ccc', padding: '10px' }}>
+            <div style={{
+              maxWidth: isMobile ? '100%' : '320px',
+              margin: isMobile ? '10px auto' : '10px 0',
+              border: '1px solid #ccc',
+              padding: '10px'
+            }}>
               <SignatureCanvas onSignature={setAssinaturaBase64} />
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-4 w-full"
-          >
-            Registrar Ponto
-          </button>
+          <div className="mt-4 flex justify-between items-center">
+            <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">
+              Registrar Ponto
+            </button>
+            <button type="button" onClick={() => setFuncionario(null)} className="text-sm underline text-blue-700">
+              Sair
+            </button>
+          </div>
 
-          {mensagem && (
-            <p className="mt-4 text-center" style={{ color: mensagem.includes('sucesso') ? 'green' : 'red' }}>{mensagem}</p>
-          )}
+          {mensagem && <p className="text-center mt-4" style={{ color: mensagem.includes('sucesso') ? 'green' : 'red' }}>{mensagem}</p>}
         </form>
       )}
     </div>
