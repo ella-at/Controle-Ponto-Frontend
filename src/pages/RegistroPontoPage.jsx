@@ -15,7 +15,10 @@ function RegistroPontoPage() {
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const buscarFuncionario = async () => {
@@ -89,57 +92,61 @@ function RegistroPontoPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-10 font-sans bg-white shadow-lg rounded-lg mt-10">
+    <div className="max-w-2xl mx-auto p-4 font-sans text-base text-gray-800">
       {!funcionario ? (
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6">📝 Identifique-se</h2>
+        <div className="flex flex-col items-center">
+          <h2 className="text-2xl font-semibold text-center mb-6 text-blue-700">Identifique-se para Registrar o Ponto</h2>
           <input
             type="text"
             placeholder="Digite seu nome completo"
             value={nomeBusca}
             onChange={(e) => setNomeBusca(e.target.value)}
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full md:w-3/4 px-4 py-2 border border-gray-300 rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             onClick={buscarFuncionario}
-            className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-3 rounded-md font-semibold"
+            className="w-full md:w-3/4 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition duration-200"
           >
             Acessar Registro de Ponto
           </button>
-          {mensagem && <p className="text-red-600 mt-4 text-sm">{mensagem}</p>}
+          {mensagem && <p className="text-center mt-4 text-red-600 font-medium">{mensagem}</p>}
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="text-center">
-          <p className="mb-4 text-xl font-semibold text-gray-800">
-            👋 Olá, <span className="text-blue-700">{funcionario.nome}</span> — Registro de {tipo === 'entrada' ? 'Entrada' : 'Saída'}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 items-center">
+          <p className="text-lg font-semibold text-center text-green-700">
+            Olá, {funcionario.nome}! ({tipo.toUpperCase()})
           </p>
 
           <WebcamCapture onCapture={setFotoBase64} />
 
-          <div className="mt-6">
-            <label className="block mb-2 font-medium text-gray-700">✍️ Assinatura:</label>
-            <div className="border border-gray-300 rounded-md p-3 mx-auto" style={{ maxWidth: isMobile ? '100%' : '320px' }}>
+          <div className="w-full">
+            <label className="block font-semibold mb-1">Assinatura:</label>
+            <div className="border rounded-md p-2 shadow-sm bg-white max-w-xs mx-auto">
               <SignatureCanvas onSignature={setAssinaturaBase64} />
             </div>
           </div>
 
-          <div className="mt-6 flex justify-between items-center">
+          <div className="w-full flex flex-col sm:flex-row justify-between items-center gap-4 mt-4">
             <button
               type="submit"
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-semibold"
+              className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded transition duration-200"
             >
-              ✅ Registrar Ponto
+              Registrar Ponto
             </button>
             <button
               type="button"
               onClick={() => setFuncionario(null)}
-              className="ml-4 text-sm text-blue-600 underline hover:text-blue-800"
+              className="text-sm text-blue-600 underline hover:text-blue-800"
             >
               Sair
             </button>
           </div>
 
-          {mensagem && <p className="text-center mt-4 text-sm" style={{ color: mensagem.includes('sucesso') ? 'green' : 'red' }}>{mensagem}</p>}
+          {mensagem && (
+            <p className="text-center mt-4 font-medium" style={{ color: mensagem.includes('sucesso') ? 'green' : 'red' }}>
+              {mensagem}
+            </p>
+          )}
         </form>
       )}
     </div>
