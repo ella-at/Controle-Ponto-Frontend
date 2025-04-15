@@ -7,6 +7,7 @@ function PainelVerificacao() {
   const [faltantes, setFaltantes] = useState([]);
   const [erro, setErro] = useState('');
   const [dataSelecionada, setDataSelecionada] = useState(new Date().toISOString().split('T')[0]);
+  const [visiveis, setVisiveis] = useState({});
   const API_URL = import.meta.env.VITE_API_URL;
 
   const buscarDados = async () => {
@@ -24,6 +25,23 @@ function PainelVerificacao() {
   useEffect(() => {
     buscarDados();
   }, [dataSelecionada]);
+
+  // Agrupar registros por funcionário
+  const registrosAgrupados = entradas.reduce((acc, ponto) => {
+    const funcionarioId = ponto.Funcionario?.id;
+    if (!acc[funcionarioId]) {
+      acc[funcionarioId] = {
+        funcionario: ponto.Funcionario,
+        registros: []
+      };
+    }
+    acc[funcionarioId].registros.push(ponto);
+    return acc;
+  }, {});
+
+  const toggleVisivel = (id) => {
+    setVisiveis((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   return (
     <div style={{ maxWidth: '1000px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
@@ -63,53 +81,79 @@ function PainelVerificacao() {
       <section style={{ marginBottom: '3rem' }}>
         <h3 style={{ borderBottom: '2px solid #eee', paddingBottom: '8px' }}>✅ Registros do Dia</h3>
 
-        {entradas.length === 0 ? (
+        {Object.keys(registrosAgrupados).length === 0 ? (
           <p style={{ color: '#888' }}>Nenhum registro neste dia.</p>
         ) : (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
-            {entradas.map((p) => (
+          Object.values(registrosAgrupados).map(({ funcionario, registros }) => {
+            const isVisible = visiveis[funcionario.id];
+            return (
               <div
-                key={p.id}
+                key={funcionario.id}
                 style={{
-                  backgroundColor: '#f9f9f9',
+                  marginBottom: '2rem',
+                  padding: '15px',
                   border: '1px solid #ddd',
                   borderRadius: '8px',
-                  padding: '15px',
-                  flex: '1 1 300px',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                  backgroundColor: '#f9f9f9'
                 }}
               >
-                <strong style={{ fontSize: '1.1rem' }}>{p.Funcionario?.nome}</strong>
-                <p style={{ margin: '5px 0' }}>
-                  ⏰ {new Date(p.data_hora).toLocaleTimeString()} — <strong>{p.tipo.toUpperCase()}</strong>
-                </p>
-                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                  {p.foto && (
-                    <img 
-                      src={p.foto}
-                      alt="foto"
-                      width="100"
-                      style={{ borderRadius: '4px', objectFit: 'cover' }}
-                    />
-                  )}
-                  {p.assinatura && (
-                    <img
-                      src={p.assinatura}
-                      alt="assinatura"
-                      width="100"
-                      style={{ borderRadius: '4px', objectFit: 'contain' }}
-                    />
-                  )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <strong style={{ fontSize: '1.2rem' }}>{funcionario.nome}</strong>
+                  <div>
+                    <span style={{ marginRight: '10px' }}>🗂 {registros.length} registro(s)</span>
+                    <button
+                      onClick={() => toggleVisivel(funcionario.id)}
+                      style={{
+                        background: 'none',
+                        border: '1px solid #007bff',
+                        borderRadius: '5px',
+                        padding: '5px 10px',
+                        color: '#007bff',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {isVisible ? '🙈 Ocultar' : '👁 Mostrar'}
+                    </button>
+                  </div>
                 </div>
+
+                {isVisible && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', marginTop: '10px' }}>
+                    {registros.map((ponto) => (
+                      <div
+                        key={ponto.id}
+                        style={{
+                          backgroundColor: '#fff',
+                          border: '1px solid #ccc',
+                          borderRadius: '6px',
+                          padding: '10px',
+                          width: '280px',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                        }}
+                      >
+                        <p style={{ margin: '5px 0' }}>
+                          ⏰ {new Date(ponto.data_hora).toLocaleTimeString()} — <strong>{ponto.tipo.toUpperCase()}</strong>
+                        </p>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                          {ponto.foto && (
+                            <img src={ponto.foto} alt="foto" width="100" style={{ borderRadius: '4px' }} />
+                          )}
+                          {ponto.assinatura && (
+                            <img src={ponto.assinatura} alt="assinatura" width="100" style={{ borderRadius: '4px' }} />
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
+            );
+          })
         )}
       </section>
 
       <section>
         <h3 style={{ borderBottom: '2px solid #eee', paddingBottom: '8px' }}>⚠️ Faltando registrar entrada</h3>
-
         {faltantes.length === 0 ? (
           <p style={{ color: 'green' }}>Todos registraram entrada neste dia 🎉</p>
         ) : (
