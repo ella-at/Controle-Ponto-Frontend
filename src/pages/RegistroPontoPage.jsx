@@ -1,132 +1,60 @@
 // src/pages/RegistroPontoPage.jsx
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import WebcamCapture from '../components/WebcamCapture';
-import SignatureCanvas from '../components/SignatureCanvas';
+import React, { useState } from 'react';
+import RegistroPonto from './RegistroPonto';
 
 function RegistroPontoPage() {
-  const [funcionarios, setFuncionarios] = useState([]);
-  const [buscaNome, setBuscaNome] = useState('');
-  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState(null);
-  const [tipo, setTipo] = useState('entrada');
-  const [fotoBase64, setFotoBase64] = useState('');
-  const [assinaturaBase64, setAssinaturaBase64] = useState('');
-  const [mensagem, setMensagem] = useState('');
+  const [funcionario, setFuncionario] = useState(null);
+  const [nomeBusca, setNomeBusca] = useState('');
+  const [erro, setErro] = useState('');
 
   const API_URL = import.meta.env.VITE_API_URL;
 
-  useEffect(() => {
-    buscarFuncionarios();
-  }, []);
-
-  const buscarFuncionarios = async () => {
+  const buscarFuncionario = async () => {
     try {
-      const res = await axios.get(`${API_URL}/funcionarios`);
-      setFuncionarios(res.data);
-    } catch (err) {
-      console.error('Erro ao buscar funcionários:', err);
-    }
-  };
+      const res = await fetch(`${API_URL}/funcionarios`);
+      const lista = await res.json();
+      const encontrado = lista.find(f => f.nome.toLowerCase() === nomeBusca.toLowerCase());
 
-  const handleBuscar = () => {
-    const encontrado = funcionarios.find(f => f.nome.toLowerCase().includes(buscaNome.toLowerCase()));
-    if (encontrado) {
-      setFuncionarioSelecionado(encontrado);
-    } else {
-      setMensagem('Funcionário não encontrado');
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!funcionarioSelecionado || !fotoBase64 || !assinaturaBase64) {
-      setMensagem('Preencha todos os campos, tire a foto e assine.');
-      return;
-    }
-
-    try {
-      const formData = new FormData();
-      formData.append('funcionario_id', funcionarioSelecionado.id);
-      formData.append('tipo', tipo);
-      formData.append('foto', dataURLtoFile(fotoBase64, 'foto.jpg'));
-      formData.append('assinatura', dataURLtoFile(assinaturaBase64, 'assinatura.png'));
-
-      await axios.post(`${API_URL}/pontos`, formData);
-      setMensagem('Registro realizado com sucesso!');
-
-      // Voltar para a tela inicial
-      setFuncionarioSelecionado(null);
-      setBuscaNome('');
-      setFotoBase64('');
-      setAssinaturaBase64('');
+      if (encontrado) {
+        setFuncionario(encontrado);
+        setErro('');
+      } else {
+        setErro('Funcionário não encontrado');
+      }
     } catch (err) {
       console.error(err);
-      setMensagem('Erro ao registrar ponto.');
+      setErro('Erro ao buscar funcionário');
     }
   };
 
-  const dataURLtoFile = (dataUrl, filename) => {
-    const arr = dataUrl.split(',');
-    const mime = arr[0].match(/:(.*?);/)[1];
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) u8arr[n] = bstr.charCodeAt(n);
-    return new File([u8arr], filename, { type: mime });
+  const handleVoltar = () => {
+    setFuncionario(null);
+    setNomeBusca('');
+    setErro('');
   };
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-8 font-sans">
-      {!funcionarioSelecionado ? (
-        <div>
-          <h2 className="text-2xl font-semibold text-center mb-6">🔍 Identifique-se</h2>
+    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '2rem', fontFamily: 'Arial, sans-serif' }}>
+      {!funcionario ? (
+        <>
+          <h2 style={{ marginBottom: '1rem', textAlign: 'center' }}>🔍 Identifique-se</h2>
           <input
             type="text"
-            placeholder="Digite seu nome"
-            value={buscaNome}
-            onChange={(e) => setBuscaNome(e.target.value)}
-            className="w-full px-4 py-2 border rounded-md shadow-sm mb-4"
+            placeholder="Digite seu nome completo"
+            value={nomeBusca}
+            onChange={(e) => setNomeBusca(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && buscarFuncionario()}
+            style={{ width: '100%', padding: '10px', marginBottom: '1rem', borderRadius: '5px', border: '1px solid #ccc' }}
           />
-          <button
-            onClick={handleBuscar}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
-          >
-            Buscar
+          <button onClick={buscarFuncionario} style={{ padding: '10px 20px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+            Acessar Registro de Ponto
           </button>
-          {mensagem && (
-            <p className="mt-4 text-center" style={{ color: 'red' }}>{mensagem}</p>
-          )}
-        </div>
+          {erro && <p style={{ color: 'red', marginTop: '1rem' }}>{erro}</p>}
+        </>
       ) : (
-        <form onSubmit={handleSubmit}>
-          <h2 className="text-xl font-bold mb-4 text-center">Olá, {funcionarioSelecionado.nome}</h2>
-          <label>Tipo de Ponto:</label>
-          <select value={tipo} onChange={(e) => setTipo(e.target.value)} className="block mb-4 mt-1 px-3 py-2 border rounded">
-            <option value="entrada">Entrada</option>
-            <option value="saida">Saída</option>
-          </select>
-
-          <WebcamCapture onCapture={setFotoBase64} />
-
-          <div style={{ marginTop: '20px' }}>
-            <label><strong>Assinatura:</strong></label>
-            <div style={{ border: '1px solid #ccc', padding: '10px' }}>
-              <SignatureCanvas onSignature={setAssinaturaBase64} />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-4 w-full"
-          >
-            Registrar Ponto
-          </button>
-
-          {mensagem && (
-            <p className="mt-4 text-center" style={{ color: mensagem.includes('sucesso') ? 'green' : 'red' }}>{mensagem}</p>
-          )}
-        </form>
+        <>
+          <RegistroPonto standalone={true} funcionarioSelecionadoExternamente={funcionario} onCancelar={handleVoltar} />
+        </>
       )}
     </div>
   );
