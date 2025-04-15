@@ -133,13 +133,14 @@ function RegistroPagamento() {
           {r.pagamento?.comprovante && (
             <p>
               <button
-              onClick={() => window.open(`${API_URL}/${pagamento.comprovante}`, '_blank', 'width=800,height=600')}
-              style={{ marginTop: '5px' }}
+                onClick={() => window.open(r.pagamento.comprovante, '_blank', 'width=800,height=600')}
+                style={{ marginTop: '5px' }}
               >
                 📎 Ver Comprovante
               </button>
             </p>
           )}
+
 
           {!r.pagamento && (
             <div>
