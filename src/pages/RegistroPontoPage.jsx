@@ -89,53 +89,57 @@ function RegistroPontoPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-8 font-sans">
+    <div className="max-w-xl mx-auto px-4 py-10 font-sans bg-white shadow-lg rounded-lg mt-10">
       {!funcionario ? (
-        <div>
-          <h2 className="text-2xl font-semibold text-center mb-4">Identifique-se para Registrar o Ponto</h2>
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">📝 Identifique-se</h2>
           <input
             type="text"
             placeholder="Digite seu nome completo"
             value={nomeBusca}
             onChange={(e) => setNomeBusca(e.target.value)}
-            className="w-full px-4 py-2 border rounded mb-4"
+            className="w-full px-4 py-3 border-2 border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-          <button onClick={buscarFuncionario} className="w-full bg-blue-600 text-white py-2 rounded">
+          <button
+            onClick={buscarFuncionario}
+            className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-3 rounded-md font-semibold"
+          >
             Acessar Registro de Ponto
           </button>
-          {mensagem && <p className="text-center mt-4 text-red-600">{mensagem}</p>}
+          {mensagem && <p className="text-red-600 mt-4 text-sm">{mensagem}</p>}
         </div>
       ) : (
-        <form onSubmit={handleSubmit}>
-          <p className="mb-2 text-center text-lg font-semibold">
-            Olá, {funcionario.nome}! ({tipo.toUpperCase()})
+        <form onSubmit={handleSubmit} className="text-center">
+          <p className="mb-4 text-xl font-semibold text-gray-800">
+            👋 Olá, <span className="text-blue-700">{funcionario.nome}</span> — Registro de {tipo === 'entrada' ? 'Entrada' : 'Saída'}
           </p>
 
           <WebcamCapture onCapture={setFotoBase64} />
 
-          <div style={{ marginTop: '20px' }}>
-            <label><strong>Assinatura:</strong></label>
-            <div style={{
-              maxWidth: isMobile ? '100%' : '320px',
-              margin: isMobile ? '10px auto' : '10px 0',
-              border: '1px solid #ccc',
-              padding: '10px'
-            }}>
+          <div className="mt-6">
+            <label className="block mb-2 font-medium text-gray-700">✍️ Assinatura:</label>
+            <div className="border border-gray-300 rounded-md p-3 mx-auto" style={{ maxWidth: isMobile ? '100%' : '320px' }}>
               <SignatureCanvas onSignature={setAssinaturaBase64} />
             </div>
           </div>
 
-          <div className="mt-4 flex justify-between items-center">
-            <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">
-              Registrar Ponto
+          <div className="mt-6 flex justify-between items-center">
+            <button
+              type="submit"
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-semibold"
+            >
+              ✅ Registrar Ponto
             </button>
-            <br></br>
-            <button type="button" onClick={() => setFuncionario(null)} className="text-sm underline text-blue-700">
+            <button
+              type="button"
+              onClick={() => setFuncionario(null)}
+              className="ml-4 text-sm text-blue-600 underline hover:text-blue-800"
+            >
               Sair
             </button>
           </div>
 
-          {mensagem && <p className="text-center mt-4" style={{ color: mensagem.includes('sucesso') ? 'green' : 'red' }}>{mensagem}</p>}
+          {mensagem && <p className="text-center mt-4 text-sm" style={{ color: mensagem.includes('sucesso') ? 'green' : 'red' }}>{mensagem}</p>}
         </form>
       )}
     </div>
