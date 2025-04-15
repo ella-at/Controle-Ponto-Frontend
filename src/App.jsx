@@ -5,8 +5,10 @@ import CadastroFuncionario from './pages/CadastroFuncionario';
 import RegistroPagamento from './pages/RegistroPagamento';
 import AssinaturaMobile from './pages/AssinaturaMobile';
 import RegistroPontoPage from './pages/RegistroPontoPage';
+import RegistroPontoStandalone from './pages/RegistroPontoStandalone';
 
 function App() {
+  
   const [tela, setTela] = useState('registro');
 
   const botaoStyle = (ativo) => ({
@@ -33,7 +35,8 @@ function App() {
         <button onClick={() => setTela('registro-func')} style={botaoStyle(tela === 'registro-func')}>
           Registro de Funcionário
         </button>
-
+        
+        
         <button
           onClick={() => setTela('painel')}
           style={botaoStyle(tela === 'painel')}
@@ -48,6 +51,7 @@ function App() {
         <button onClick={() => setTela('pagamento')} style={botaoStyle(tela === 'pagamento')}>
         Registro de Pagamento
         </button>
+        
       </div>
 
 
