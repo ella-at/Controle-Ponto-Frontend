@@ -172,8 +172,9 @@ function CadastroFuncionario() {
                 <li key={p.id}>
                   Pagamento em {new Date(p.createdAt).toLocaleString()}
                   {p.comprovante && (
-                    <> — <a href={`${API_URL}/${p.comprovante}`} target="_blank" rel="noreferrer">📎 Ver comprovante</a></>
+                    <> — <a href={p.comprovante} target="_blank" rel="noreferrer">📎 Ver comprovante</a></>
                   )}
+
                 </li>
               ))}
             </ul>
