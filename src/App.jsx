@@ -36,7 +36,7 @@ function App() {
           onClick={() => window.open('/registro-funcionario', '_blank')}
           style={botaoStyle(false)}
         >
-          Registro de Funcionário
+          Registro do Funcionário
         </button>
 
         

@@ -114,7 +114,7 @@ function RegistroPontoPage() {
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 items-center">
           <p className="text-lg font-semibold text-center text-green-700">
-            Olá, {funcionario.nome}! ({tipo.toUpperCase()})
+            Olá, {funcionario.nome}! 
           </p>
 
           <WebcamCapture onCapture={setFotoBase64} />
