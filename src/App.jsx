@@ -32,9 +32,13 @@ function App() {
         >
           Registrar Ponto ADM
         </button>
-        <button onClick={() => setTela('registro-func')} style={botaoStyle(tela === 'registro-func')}>
+        <button
+          onClick={() => window.open('/registro-funcionario', '_blank')}
+          style={botaoStyle(false)}
+        >
           Registro de Funcionário
         </button>
+
         
         
         <button
