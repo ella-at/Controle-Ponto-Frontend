@@ -135,24 +135,7 @@ function RegistroPagamento() {
         </button>
       </div>
 
-      {pendentesSaida.length > 0 && (
-        <div style={{ marginBottom: '2rem' }}>
-          <h3>⚠️ Funcionários com saída pendente</h3>
-          {pendentesSaida.map((f, i) => (
-            <div key={i} style={{
-              padding: '10px',
-              marginBottom: '10px',
-              border: '1px solid orange',
-              borderRadius: '6px',
-              backgroundColor: '#fff7e6'
-            }}>
-              <strong>{f.funcionario?.nome}</strong><br />
-              Entrada: {new Date(f.entrada).toLocaleTimeString('pt-BR')}<br />
-              <button onClick={() => setModalFuncionario(f.funcionario)}>📤 Saída Administrativa</button>
-            </div>
-          ))}
-        </div>
-      )}
+      
 
       {registros.map((r, i) => (
         <div key={i} style={{
@@ -198,6 +181,27 @@ function RegistroPagamento() {
           )}
         </div>
       ))}
+
+
+      {pendentesSaida.length > 0 && (
+        <div style={{ marginBottom: '2rem' }}>
+          <h3>⚠️ Funcionários com saída pendente</h3>
+          {pendentesSaida.map((f, i) => (
+            <div key={i} style={{
+              padding: '10px',
+              marginBottom: '10px',
+              border: '1px solid orange',
+              borderRadius: '6px',
+              backgroundColor: '#fff7e6'
+            }}>
+              <strong>{f.funcionario?.nome}</strong><br />
+              Entrada: {new Date(f.entrada).toLocaleTimeString('pt-BR')}<br />
+              <button onClick={() => setModalFuncionario(f.funcionario)}>📤 Saída Administrativa</button>
+            </div>
+          ))}
+        </div>
+      )}
+
 
       {modalFuncionario && (
         <div style={{ background: '#eee', padding: '20px', borderRadius: '10px', marginBottom: '20px' }}>
