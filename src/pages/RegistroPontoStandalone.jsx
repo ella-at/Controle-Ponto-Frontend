@@ -129,6 +129,7 @@ function RegistroPontoPage() {
             <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">
               Registrar Ponto
             </button>
+            <br></br>
             <button type="button" onClick={() => setFuncionario(null)} className="text-sm underline text-blue-700">
               Sair
             </button>
