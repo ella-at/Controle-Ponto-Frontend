@@ -3,7 +3,7 @@ import axios from 'axios';
 import WebcamCapture from '../components/WebcamCapture';
 import SignatureCanvas from '../components/SignatureCanvas';
 
-function RegistroPonto() {
+function RegistroPonto({ standalone = false }) {
   const [funcionarios, setFuncionarios] = useState([]);
   const [filtroCargo, setFiltroCargo] = useState('');
   const [filtroDepartamento, setFiltroDepartamento] = useState('');
@@ -118,66 +118,68 @@ function RegistroPonto() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 font-sans">
-      <h2 className="text-3xl font-semibold text-center text-blue-700 mb-6">🕒 Registro de Ponto</h2>
+      {!standalone && <h2 className="text-3xl font-semibold text-center text-blue-700 mb-6">🕒 Registro de Ponto</h2>}
 
       {!funcionarioSelecionado ? (
         <>
-          {/* Filtro por Data */}
-          <div className="mb-6">
-            <label className="block mb-1"><strong>Selecionar Data:</strong></label>
-            <input
-              type="date"
-              value={dataSelecionada}
-              onChange={(e) => setDataSelecionada(e.target.value)}
-              className="px-4 py-2 border rounded-md shadow-sm"
-            />
-          </div>
+          {!standalone && (
+            <>
+              <div className="mb-6">
+                <label className="block mb-1"><strong>Selecionar Data:</strong></label>
+                <input
+                  type="date"
+                  value={dataSelecionada}
+                  onChange={(e) => setDataSelecionada(e.target.value)}
+                  className="px-4 py-2 border rounded-md shadow-sm"
+                />
+              </div>
 
-          {/* Filtros */}
-          <div className="flex flex-wrap gap-4 mb-4">
-            <input
-              type="text"
-              placeholder="Buscar por nome"
-              value={buscaNome}
-              onChange={(e) => setBuscaNome(e.target.value)}
-              className="flex-1 px-4 py-2 border rounded-md shadow-sm"
-            />
-            <select
-              value={filtroCargo}
-              onChange={(e) => setFiltroCargo(e.target.value)}
-              className="px-4 py-2 border rounded-md shadow-sm"
-            >
-              <option value="">Todos os cargos</option>
-              {cargosUnicos.map((cargo, idx) => (
-                <option key={idx} value={cargo}>{cargo}</option>
-              ))}
-            </select>
-            <select
-              value={filtroDepartamento}
-              onChange={(e) => setFiltroDepartamento(e.target.value)}
-              className="px-4 py-2 border rounded-md shadow-sm"
-            >
-              <option value="">Todos os departamentos</option>
-              {departamentosUnicos.map((dep, idx) => (
-                <option key={idx} value={dep}>{dep}</option>
-              ))}
-            </select>
-          </div>
+              <div className="flex flex-wrap gap-4 mb-4">
+                <input
+                  type="text"
+                  placeholder="Buscar por nome"
+                  value={buscaNome}
+                  onChange={(e) => setBuscaNome(e.target.value)}
+                  className="flex-1 px-4 py-2 border rounded-md shadow-sm"
+                />
+                <select
+                  value={filtroCargo}
+                  onChange={(e) => setFiltroCargo(e.target.value)}
+                  className="px-4 py-2 border rounded-md shadow-sm"
+                >
+                  <option value="">Todos os cargos</option>
+                  {cargosUnicos.map((cargo, idx) => (
+                    <option key={idx} value={cargo}>{cargo}</option>
+                  ))}
+                </select>
+                <select
+                  value={filtroDepartamento}
+                  onChange={(e) => setFiltroDepartamento(e.target.value)}
+                  className="px-4 py-2 border rounded-md shadow-sm"
+                >
+                  <option value="">Todos os departamentos</option>
+                  {departamentosUnicos.map((dep, idx) => (
+                    <option key={idx} value={dep}>{dep}</option>
+                  ))}
+                </select>
+              </div>
 
-          <div className="mb-6">
-            <button
-              onClick={handleBuscar}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mr-2"
-            >
-              🔍 Buscar
-            </button>
-            <button
-              onClick={handleLimpar}
-              className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-            >
-              🧼 Limpar Filtro
-            </button>
-          </div>
+              <div className="mb-6">
+                <button
+                  onClick={handleBuscar}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mr-2"
+                >
+                  🔍 Buscar
+                </button>
+                <button
+                  onClick={handleLimpar}
+                  className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                >
+                  Limpar Filtro
+                </button>
+              </div>
+            </>
+          )}
 
           {resultadoBusca.length === 0 ? (
             <p style={{ color: 'gray' }}>Nenhum funcionário encontrado.</p>
@@ -204,10 +206,12 @@ function RegistroPonto() {
         </>
       ) : (
         <form onSubmit={handleSubmit}>
-          <p>
-            Funcionário selecionado: <strong>{funcionarioSelecionado.nome}</strong>{' '}
-            <button type="button" onClick={() => setFuncionarioSelecionado(null)}>Trocar</button>
-          </p>
+          {!standalone && (
+            <p>
+              Funcionário selecionado: <strong>{funcionarioSelecionado.nome}</strong>{' '}
+              <button type="button" onClick={() => setFuncionarioSelecionado(null)}>Trocar</button>
+            </p>
+          )}
 
           <label>Tipo de Ponto:</label>
           <select value={tipo} onChange={(e) => setTipo(e.target.value)} style={{ marginLeft: '10px', padding: '6px' }}>

@@ -4,7 +4,7 @@ import PainelVerificacao from './pages/PainelVerificacao';
 import CadastroFuncionario from './pages/CadastroFuncionario';
 import RegistroPagamento from './pages/RegistroPagamento';
 import AssinaturaMobile from './pages/AssinaturaMobile';
-
+import RegistroPontoPage from './pages/RegistroPontoPage';
 
 function App() {
   const [tela, setTela] = useState('registro');
@@ -28,8 +28,12 @@ function App() {
           onClick={() => setTela('registro')}
           style={botaoStyle(tela === 'registro')}
         >
-          Registrar Ponto
+          Registrar Ponto ADM
         </button>
+        <button onClick={() => setTela('registro-func')} style={botaoStyle(tela === 'registro-func')}>
+          Registro de Funcionário
+        </button>
+
         <button
           onClick={() => setTela('painel')}
           style={botaoStyle(tela === 'painel')}
@@ -51,6 +55,7 @@ function App() {
       {tela === 'painel' && <PainelVerificacao />}
       {tela === 'cadastro' && <CadastroFuncionario />}
       {tela === 'pagamento' && <RegistroPagamento />}
+      {tela === 'registro-func' && <RegistroPontoPage />}
     </div>
   );
 }
