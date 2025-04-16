@@ -119,6 +119,7 @@ function CadastroFuncionario() {
           required
         >
           <option value="">Selecione o departamento</option>
+          <option value="Atendimento">Atendimento</option>
           <option value="Carregadores">Carregadores</option>
           <option value="Comercial">Comercial</option>
           <option value="Diretoria">Diretoria</option>

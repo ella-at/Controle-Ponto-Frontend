@@ -129,6 +129,13 @@ function RegistroPagamento() {
           onChange={(e) => setDataSelecionada(e.target.value)}
           style={{ padding: '6px', marginRight: '10px' }}
         />
+        <input
+          type="text"
+          placeholder="Buscar por nome"
+          value={buscaNome}
+          onChange={(e) => setBuscaNome(e.target.value)}
+          style={{ padding: '6px', marginRight: '10px' }}
+        />
         <button onClick={carregarRegistros} style={{ padding: '6px 12px' }}>🔍 Buscar</button>
         <button onClick={() => window.open(`${API_URL}/pagamentos/pendentes/excel`, '_blank')}>
           📥 Exportar Pendentes
