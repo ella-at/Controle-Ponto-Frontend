@@ -121,7 +121,7 @@ function RegistroPagamento() {
   };
 
   const registrosFiltrados = registros.filter(r =>
-    r.funcionario?.nome?.toLowerCase().includes(buscaNome.toLowerCase())
+    r.funcionario?.nome.toLowerCase().includes(buscaNome.toLowerCase())
   );
 
   return (
@@ -149,6 +149,8 @@ function RegistroPagamento() {
         </button>
       </div>
 
+      <h3 style={{ marginBottom: '1rem' }}>✅ Entrada & Saída para Pagamento</h3>
+
       {registrosFiltrados.map((r, i) => (
         <div key={i} style={{
           padding: '15px',
@@ -162,12 +164,8 @@ function RegistroPagamento() {
           Cargo: {r.funcionario?.cargo} – Departamento: {r.funcionario?.departamento}<br />
           PIX: {r.funcionario?.pix || 'Não informado'}<br />
           Entrada: {new Date(r.entrada).toLocaleTimeString('pt-BR')}<br />
-          Saída: {new Date(r.saida).toLocaleTimeString('pt-BR')}
-          {r.responsavel_saida_adm && (
-            <span style={{ color: 'orange', fontStyle: 'italic' }}>
-              {' '} (Saída administrativa por {r.responsavel_saida_adm})
-            </span>
-          )}<br />
+          Saída: {new Date(r.saida).toLocaleTimeString('pt-BR')}<br />
+          Status de Saída: {r.responsavel_saida_adm ? `Administrativa (por ${r.responsavel_saida_adm})` : 'Realizada'}<br />
 
           <p>
             <strong>Status Pagamento:</strong> {r.pagamento ? '✅ Pago' : '❌ Pendente'}
