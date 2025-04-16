@@ -9,6 +9,7 @@ function RegistroPagamento() {
   const [dataSelecionada, setDataSelecionada] = useState(new Date().toISOString().slice(0, 10));
   const [saidaManual, setSaidaManual] = useState({ horario: '', responsavel: '' });
   const [modalFuncionario, setModalFuncionario] = useState(null);
+  const [buscaNome, setBuscaNome] = useState('');
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -32,7 +33,8 @@ function RegistroPagamento() {
             saida: null,
             pontoEntradaId: null,
             pontoSaidaId: null,
-            pagamento: null
+            pagamento: null,
+            responsavel_saida_adm: null
           };
         }
 
@@ -44,6 +46,7 @@ function RegistroPagamento() {
         if (ponto.tipo === 'saida') {
           agrupados[funcionario_id].saida = ponto.data_hora;
           agrupados[funcionario_id].pontoSaidaId = ponto.id;
+          agrupados[funcionario_id].responsavel_saida_adm = ponto.responsavel_saida_adm;
         }
       }
 
@@ -106,7 +109,7 @@ function RegistroPagamento() {
         data_hora: horarioCompleto,
         responsavel_saida_adm: saidaManual.responsavel
       });
-      
+
       setModalFuncionario(null);
       setSaidaManual({ horario: '', responsavel: '' });
       setMensagem('Saída administrativa registrada!');
@@ -116,6 +119,10 @@ function RegistroPagamento() {
       setMensagem('Erro ao registrar saída administrativa.');
     }
   };
+
+  const registrosFiltrados = registros.filter(r =>
+    r.funcionario?.nome?.toLowerCase().includes(buscaNome.toLowerCase())
+  );
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
@@ -142,9 +149,7 @@ function RegistroPagamento() {
         </button>
       </div>
 
-      
-
-      {registros.map((r, i) => (
+      {registrosFiltrados.map((r, i) => (
         <div key={i} style={{
           padding: '15px',
           border: '1px solid #ccc',
@@ -163,7 +168,6 @@ function RegistroPagamento() {
               {' '} (Saída administrativa por {r.responsavel_saida_adm})
             </span>
           )}<br />
-
 
           <p>
             <strong>Status Pagamento:</strong> {r.pagamento ? '✅ Pago' : '❌ Pendente'}
@@ -195,7 +199,6 @@ function RegistroPagamento() {
         </div>
       ))}
 
-
       {pendentesSaida.length > 0 && (
         <div style={{ marginBottom: '2rem' }}>
           <h3>⚠️ Funcionários com saída pendente</h3>
@@ -214,7 +217,6 @@ function RegistroPagamento() {
           ))}
         </div>
       )}
-
 
       {modalFuncionario && (
         <div style={{ background: '#eee', padding: '20px', borderRadius: '10px', marginBottom: '20px' }}>
