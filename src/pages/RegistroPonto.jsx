@@ -15,6 +15,7 @@ function RegistroPonto({ standalone = false }) {
   const [assinaturaBase64, setAssinaturaBase64] = useState('');
   const [mensagem, setMensagem] = useState('');
   const [pontosPorData, setPontosPorData] = useState([]);
+  const [pendenciasSaida, setPendenciasSaida] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
   const [dataSelecionada, setDataSelecionada] = useState(new Date().toISOString().split('T')[0]);
 
@@ -22,6 +23,7 @@ function RegistroPonto({ standalone = false }) {
 
   useEffect(() => {
     buscarFuncionarios();
+    buscarPendenciasSaida();
     setIsMobile(window.innerWidth < 768);
   }, []);
 
@@ -35,6 +37,15 @@ function RegistroPonto({ standalone = false }) {
       setPontosPorData(res.data);
     } catch (err) {
       console.error('Erro ao buscar pontos por data:', err);
+    }
+  };
+
+  const buscarPendenciasSaida = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/pontos/pendencias-saida`);
+      setPendenciasSaida(res.data); // Deve retornar array de objetos: { funcionario_id, nome, data }
+    } catch (err) {
+      console.error('Erro ao buscar pendências de saída:', err);
     }
   };
 
@@ -84,6 +95,13 @@ function RegistroPonto({ standalone = false }) {
       return;
     }
 
+    const temPendencia = pendenciasSaida.some(p => p.funcionario_id === funcionarioSelecionado.id);
+
+    if (tipo === 'entrada' && temPendencia) {
+      setMensagem('Não é possível registrar uma nova entrada. Há pendência de saída em dias anteriores.');
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append('funcionario_id', funcionarioSelecionado.id);
@@ -97,6 +115,7 @@ function RegistroPonto({ standalone = false }) {
       setFotoBase64('');
       setAssinaturaBase64('');
       carregarPontosPorData(dataSelecionada);
+      buscarPendenciasSaida();
     } catch (err) {
       console.error(err);
       setMensagem('Erro ao registrar ponto.');
@@ -119,6 +138,19 @@ function RegistroPonto({ standalone = false }) {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 font-sans">
       {!standalone && <h2 className="text-3xl font-semibold text-center text-blue-700 mb-6">🕒 Registro de Ponto</h2>}
+
+      {!standalone && pendenciasSaida.length > 0 && (
+        <div className="mb-6 p-4 bg-yellow-100 border border-yellow-300 rounded">
+          <h3 className="font-semibold mb-2 text-yellow-800">⚠️ Pendências de Saída Administrativa:</h3>
+          <ul className="list-disc pl-5 text-sm text-yellow-900">
+            {pendenciasSaida.map((p, idx) => (
+              <li key={idx}>
+                {p.nome} - pendente desde {new Date(p.data).toLocaleDateString()}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {!funcionarioSelecionado ? (
         <>
@@ -241,6 +273,13 @@ function RegistroPonto({ standalone = false }) {
               Status: {obterStatusPonto(funcionarioSelecionado.id)}
             </span>
           </div>
+
+          {pendenciasSaida.some(p => p.funcionario_id === funcionarioSelecionado.id) && (
+            <div style={{ marginTop: '1rem', padding: '10px', backgroundColor: '#fff3cd', border: '1px solid #ffeeba', color: '#856404' }}>
+              ⚠️ Este funcionário possui <strong>pendência de saída</strong> em dias anteriores.<br />
+              A regularização deve ser feita com o <strong>administrador</strong> antes de registrar nova entrada.
+            </div>
+          )}
 
           <button type="submit" style={{ marginTop: '1rem', padding: '10px 20px' }}>
             Registrar Ponto
