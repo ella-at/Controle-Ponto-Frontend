@@ -158,6 +158,7 @@ function RegistroPagamento() {
           📥 Exportar Pendentes
         </button>
 
+
       </div>
 
       <h3 style={{ marginBottom: '1rem' }}>✅ Entrada & Saída para Pagamento</h3>
