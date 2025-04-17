@@ -64,7 +64,12 @@ function RegistroPagamento() {
       }
 
       const todos = Object.values(agrupados);
-      const saidasPendentes = todos.filter(r => r.entrada && !r.saida);
+      const hoje = new Date(dataSelecionada).toISOString().split('T')[0];
+      const saidasPendentes = todos.filter(r => {
+        if (!r.entrada || r.saida) return false;
+        const dataEntrada = new Date(r.entrada).toISOString().split('T')[0];
+        return dataEntrada === hoje;
+      });
       const completos = todos.filter(r => r.entrada && r.saida);
 
       setPendentesSaida(saidasPendentes);
