@@ -149,9 +149,15 @@ function RegistroPagamento() {
           style={{ padding: '6px', marginRight: '10px' }}
         />
         <button onClick={carregarRegistros} style={{ padding: '6px 12px' }}>🔍 Buscar</button>
-        <button onClick={() => window.open(`${API_URL}/pagamentos/pendentes/excel`, '_blank')}>
+        <button
+          onClick={() => {
+            const dataFormatada = new Date(dataSelecionada).toISOString().split('T')[0];
+            window.open(`${API_URL}/pagamentos/pendentes/excel?data=${dataFormatada}`, '_blank');
+          }}
+        >
           📥 Exportar Pendentes
         </button>
+
       </div>
 
       <h3 style={{ marginBottom: '1rem' }}>✅ Entrada & Saída para Pagamento</h3>
