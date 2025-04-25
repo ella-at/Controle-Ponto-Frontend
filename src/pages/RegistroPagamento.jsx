@@ -178,7 +178,7 @@ function RegistroPagamento() {
         }}
         style={{ marginLeft: '10px' }}
       >
-        🗂️ Pagamentos Pendentes (por dia)
+        🗂️ Pagamentos Pendentes
       </button>
 
       <button
@@ -194,7 +194,7 @@ function RegistroPagamento() {
         }}
         style={{ marginLeft: '10px' }}
       >
-        📤 Saídas Pendentes (por dia)
+        📤 Saídas Pendentes
       </button>
 
 
