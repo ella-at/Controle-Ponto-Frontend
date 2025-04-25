@@ -158,6 +158,39 @@ function RegistroPagamento() {
           📥 Exportar Pendentes
         </button>
 
+        <button
+        onClick={async () => {
+          try {
+            const res = await axios.get(`${API_URL}/pagamentos/pendentes-por-dia`);
+            console.table(res.data); // 👈 Substitua isso por modal futuramente
+            alert('Pagamentos pendentes listados no console.');
+          } catch (err) {
+            console.error(err);
+            alert('Erro ao buscar pagamentos pendentes.');
+          }
+        }}
+        style={{ marginLeft: '10px' }}
+      >
+        🗂️ Listar Pagamentos Pendentes (por dia)
+      </button>
+
+      <button
+        onClick={async () => {
+          try {
+            const res = await axios.get(`${API_URL}/pontos/pendentes-por-dia`);
+            console.table(res.data); // 👈 Substitua isso por modal futuramente
+            alert('Saídas pendentes listadas no console.');
+          } catch (err) {
+            console.error(err);
+            alert('Erro ao buscar saídas pendentes.');
+          }
+        }}
+        style={{ marginLeft: '10px' }}
+      >
+        📤 Saídas Pendentes (por dia)
+      </button>
+
+
 
       </div>
 
