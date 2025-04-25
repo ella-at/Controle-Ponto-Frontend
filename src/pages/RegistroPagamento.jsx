@@ -134,61 +134,7 @@ function RegistroPagamento() {
     r.funcionario?.nome.toLowerCase().includes(buscaNome.toLowerCase())
   );
 
-  {/* MODAL - Pagamentos Pendentes por Dia */}
-{modalPagamentos && (
-  <div style={{
-    background: 'rgba(0,0,0,0.4)',
-    position: 'fixed',
-    top: 0, left: 0, right: 0, bottom: 0,
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    zIndex: 1000
-  }}>
-    <div style={{ background: 'white', padding: '20px', maxHeight: '80vh', overflowY: 'auto', borderRadius: '10px', width: '90%', maxWidth: '800px' }}>
-      <h3>🗂️ Pagamentos Pendentes por Dia</h3>
-      <button onClick={() => setModalPagamentos(false)} style={{ float: 'right' }}>Fechar</button>
-      {Object.entries(dadosPagamentosPendentes).map(([dia, registros]) => (
-        <div key={dia} style={{ marginTop: '1rem' }}>
-          <h4>📅 {dia}</h4>
-          <ul>
-            {registros.map((r, i) => (
-              <li key={i}>
-                {r.nome} — {r.cargo} ({r.departamento})
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
-
-{/* MODAL - Saídas Pendentes por Dia */}
-{modalSaidas && (
-  <div style={{
-    background: 'rgba(0,0,0,0.4)',
-    position: 'fixed',
-    top: 0, left: 0, right: 0, bottom: 0,
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    zIndex: 1000
-  }}>
-    <div style={{ background: 'white', padding: '20px', maxHeight: '80vh', overflowY: 'auto', borderRadius: '10px', width: '90%', maxWidth: '800px' }}>
-      <h3>📤 Saídas Pendentes por Dia</h3>
-      <button onClick={() => setModalSaidas(false)} style={{ float: 'right' }}>Fechar</button>
-      {Object.entries(dadosSaidasPendentes).map(([dia, registros]) => (
-        <div key={dia} style={{ marginTop: '1rem' }}>
-          <h4>📅 {dia}</h4>
-          <ul>
-            {registros.map((r, i) => (
-              <li key={i}>
-                {r.nome} — {r.cargo} ({r.departamento})
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+  
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
@@ -349,6 +295,62 @@ function RegistroPagamento() {
         <p style={{ color: mensagem.includes('sucesso') ? 'green' : 'red' }}>
           {mensagem}
         </p>
+      )}
+
+      {/* MODAL - Pagamentos Pendentes por Dia */}
+      {modalPagamentos && (
+        <div style={{
+          background: 'rgba(0,0,0,0.4)',
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{ background: 'white', padding: '20px', maxHeight: '80vh', overflowY: 'auto', borderRadius: '10px', width: '90%', maxWidth: '800px' }}>
+            <h3>🗂️ Pagamentos Pendentes por Dia</h3>
+            <button onClick={() => setModalPagamentos(false)} style={{ float: 'right' }}>Fechar</button>
+            {Object.entries(dadosPagamentosPendentes).map(([dia, registros]) => (
+              <div key={dia} style={{ marginTop: '1rem' }}>
+                <h4>📅 {dia}</h4>
+                <ul>
+                  {registros.map((r, i) => (
+                    <li key={i}>
+                      {r.nome} — {r.cargo} ({r.departamento})
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* MODAL - Saídas Pendentes por Dia */}
+      {modalSaidas && (
+        <div style={{
+          background: 'rgba(0,0,0,0.4)',
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{ background: 'white', padding: '20px', maxHeight: '80vh', overflowY: 'auto', borderRadius: '10px', width: '90%', maxWidth: '800px' }}>
+            <h3>📤 Saídas Pendentes por Dia</h3>
+            <button onClick={() => setModalSaidas(false)} style={{ float: 'right' }}>Fechar</button>
+            {Object.entries(dadosSaidasPendentes).map(([dia, registros]) => (
+              <div key={dia} style={{ marginTop: '1rem' }}>
+                <h4>📅 {dia}</h4>
+                <ul>
+                  {registros.map((r, i) => (
+                    <li key={i}>
+                      {r.nome} — {r.cargo} ({r.departamento})
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
