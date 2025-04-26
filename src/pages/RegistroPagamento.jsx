@@ -269,7 +269,7 @@ function RegistroPagamento() {
               backgroundColor: '#fff7e6'
             }}>
               <strong>{f.funcionario?.nome}</strong><br />
-              Entrada: {new Date(f.entrada).toLocaleTimeString('pt-BR')}<br />
+              Entrada: {new Date(f.entrada).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'medium' })}<br />
               <button onClick={() => setModalFuncionario(f.funcionario)}>📤 Saída Administrativa</button>
             </div>
           ))}
