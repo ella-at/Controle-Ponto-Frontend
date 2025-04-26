@@ -7,7 +7,12 @@ function RegistroPagamento() {
   const [mensagem, setMensagem] = useState('');
   const [comprovantes, setComprovantes] = useState({});
   const [dataSelecionada, setDataSelecionada] = useState(new Date().toISOString().slice(0, 10));
-  const [saidaManual, setSaidaManual] = useState({ horario: '', responsavel: '' });
+  const [saidaManual, setSaidaManual] = useState({
+    data: new Date().toISOString().split('T')[0], // já preenche com a data de hoje
+    horario: '',
+    responsavel: ''
+  });
+  
   const [modalFuncionario, setModalFuncionario] = useState(null);
   const [buscaNome, setBuscaNome] = useState('');
   const [modalPagamentos, setModalPagamentos] = useState(false);
@@ -113,15 +118,15 @@ function RegistroPagamento() {
 
   const registrarSaidaAdm = async () => {
     try {
-      const horarioCompleto = `${dataSelecionada}T${saidaManual.horario}`;
       await axios.post(`${API_URL}/pontos/saida-administrativa`, {
         funcionario_id: modalFuncionario.id,
-        data_hora: horarioCompleto,
+        data_saida: saidaManual.data,
+        horario_saida: saidaManual.horario,
         responsavel_saida_adm: saidaManual.responsavel
       });
-
+  
       setModalFuncionario(null);
-      setSaidaManual({ horario: '', responsavel: '' });
+      setSaidaManual({ data: new Date().toISOString().split('T')[0], horario: '', responsavel: '' });
       setMensagem('Saída administrativa registrada!');
       carregarRegistros();
     } catch (err) {
@@ -129,6 +134,7 @@ function RegistroPagamento() {
       setMensagem('Erro ao registrar saída administrativa.');
     }
   };
+  
 
   const registrosFiltrados = registros.filter(r =>
     r.funcionario?.nome.toLowerCase().includes(buscaNome.toLowerCase())
@@ -270,32 +276,46 @@ function RegistroPagamento() {
         </div>
       )}
 
-      {modalFuncionario && (
-        <div style={{ background: '#eee', padding: '20px', borderRadius: '10px', marginBottom: '20px' }}>
-          <h4>Registrar Saída Administrativa para {modalFuncionario.nome}</h4>
-          <input
-            type="time"
-            value={saidaManual.horario}
-            onChange={(e) => setSaidaManual({ ...saidaManual, horario: e.target.value })}
-            style={{ padding: '6px', marginRight: '10px' }}
-          />
-          <input
-            type="text"
-            placeholder="Responsável"
-            value={saidaManual.responsavel}
-            onChange={(e) => setSaidaManual({ ...saidaManual, responsavel: e.target.value })}
-            style={{ padding: '6px', marginRight: '10px' }}
-          />
-          <button onClick={registrarSaidaAdm}>Confirmar</button>
-          <button onClick={() => setModalFuncionario(null)} style={{ marginLeft: '10px' }}>Cancelar</button>
-        </div>
-      )}
+{modalFuncionario && (
+  <div style={{ background: '#eee', padding: '20px', borderRadius: '10px', marginBottom: '20px' }}>
+    <h4>Registrar Saída Administrativa para {modalFuncionario.nome}</h4>
 
-      {mensagem && (
-        <p style={{ color: mensagem.includes('sucesso') ? 'green' : 'red' }}>
-          {mensagem}
-        </p>
-      )}
+    <div style={{ marginBottom: '10px' }}>
+      <label>Data da Saída: </label>
+      <input
+        type="date"
+        value={saidaManual.data}
+        onChange={(e) => setSaidaManual({ ...saidaManual, data: e.target.value })}
+        style={{ padding: '6px', marginRight: '10px' }}
+      />
+    </div>
+
+    <div style={{ marginBottom: '10px' }}>
+      <label>Horário da Saída: </label>
+      <input
+        type="time"
+        value={saidaManual.horario}
+        onChange={(e) => setSaidaManual({ ...saidaManual, horario: e.target.value })}
+        style={{ padding: '6px', marginRight: '10px' }}
+      />
+    </div>
+
+    <div style={{ marginBottom: '10px' }}>
+      <label>Responsável: </label>
+      <input
+        type="text"
+        placeholder="Nome do responsável"
+        value={saidaManual.responsavel}
+        onChange={(e) => setSaidaManual({ ...saidaManual, responsavel: e.target.value })}
+        style={{ padding: '6px', marginRight: '10px' }}
+      />
+    </div>
+
+    <button onClick={registrarSaidaAdm}>Confirmar Saída</button>
+    <button onClick={() => setModalFuncionario(null)} style={{ marginLeft: '10px' }}>Cancelar</button>
+  </div>
+)}
+
 
       {/* MODAL - Pagamentos Pendentes por Dia */}
       {modalPagamentos && (
