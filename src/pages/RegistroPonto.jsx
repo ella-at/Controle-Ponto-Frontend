@@ -58,6 +58,20 @@ function RegistroPonto({ standalone = false }) {
     return '⚠️ Registro pendente';
   };
 
+  const confirmarVale = async (pontoId) => {
+    try {
+      await axios.post(`${API_URL}/pontos/confirmar-vale`, {
+        ponto_id: pontoId
+      });
+      setMensagem('Vale confirmado com sucesso!');
+      carregarRegistros();
+    } catch (err) {
+      console.error(err);
+      setMensagem('Erro ao confirmar vale.');
+    }
+  };
+  
+
   const buscarFuncionarios = async () => {
     try {
       const res = await axios.get(`${API_URL}/funcionarios`);
@@ -265,6 +279,19 @@ function RegistroPonto({ standalone = false }) {
               <SignatureCanvas onSignature={setAssinaturaBase64} />
             </div>
           </div>
+          
+          {pontoFuncionarioSelecionado && !pontoFuncionarioSelecionado.confirmado && (
+            <div style={{ marginTop: '20px' }}>
+              <button type="button" onClick={() => confirmarVale(pontoFuncionarioSelecionado.id)}>
+                ✅ Confirmar Recebimento de Vale
+              </button>
+            </div>
+          )}
+          {pontoFuncionarioSelecionado && pontoFuncionarioSelecionado.confirmado && (
+            <div style={{ marginTop: '20px', color: 'green' }}>
+              ✔️ Vale confirmado
+            </div>
+          )}
 
           <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
             <strong>{funcionarioSelecionado.nome}</strong><br />
