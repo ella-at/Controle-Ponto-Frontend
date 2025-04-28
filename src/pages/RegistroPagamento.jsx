@@ -117,28 +117,33 @@ function RegistroPagamento() {
   };
 
   const registrarSaidaAdm = async () => {
+    if (!saidaManual.data || !saidaManual.horario || !saidaManual.responsavel) {
+      setMensagem('Preencha todos os campos para confirmar a saída.');
+      return;
+    }
+  
     try {
       await axios.post(`${API_URL}/pontos/saida-administrativa`, {
         funcionario_id: modalFuncionario.id,
-        data_saida: saidaManual.data,
-        horario_saida: saidaManual.horario,
+        data_saida: saidaManual.data,         
+        horario_saida: saidaManual.horario,    
         responsavel_saida_adm: saidaManual.responsavel
       });
   
+      setMensagem('Saída administrativa registrada com sucesso!');
       setModalFuncionario(null);
-      setSaidaManual({ data: new Date().toISOString().split('T')[0], horario: '', responsavel: '' });
-      setMensagem('Saída administrativa registrada!');
-      carregarRegistros();
+      setSaidaManual({
+        data: new Date().toISOString().split('T')[0], 
+        horario: '', 
+        responsavel: ''
+      });
+      carregarRegistros(); 
     } catch (err) {
       console.error(err);
       setMensagem('Erro ao registrar saída administrativa.');
     }
   };
   
-
-  const registrosFiltrados = registros.filter(r =>
-    r.funcionario?.nome.toLowerCase().includes(buscaNome.toLowerCase())
-  );
 
   
 
