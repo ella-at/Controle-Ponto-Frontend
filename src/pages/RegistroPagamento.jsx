@@ -120,8 +120,7 @@ function RegistroPagamento() {
     try {
       await axios.post(`${API_URL}/pontos/saida-administrativa`, {
         funcionario_id: modalFuncionario.id,
-        data_saida: saidaManual.data,
-        horario_saida: saidaManual.horario,
+        data_hora: dataHoraCompleta,
         responsavel_saida_adm: saidaManual.responsavel
       });
   
