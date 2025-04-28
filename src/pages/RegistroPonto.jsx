@@ -279,19 +279,6 @@ function RegistroPonto({ standalone = false }) {
               <SignatureCanvas onSignature={setAssinaturaBase64} />
             </div>
           </div>
-          
-          {pontoFuncionarioSelecionado && !pontoFuncionarioSelecionado.confirmado && (
-            <div style={{ marginTop: '20px' }}>
-              <button type="button" onClick={() => confirmarVale(pontoFuncionarioSelecionado.id)}>
-                ✅ Confirmar Recebimento de Vale
-              </button>
-            </div>
-          )}
-          {pontoFuncionarioSelecionado && pontoFuncionarioSelecionado.confirmado && (
-            <div style={{ marginTop: '20px', color: 'green' }}>
-              ✔️ Vale confirmado
-            </div>
-          )}
 
           <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
             <strong>{funcionarioSelecionado.nome}</strong><br />
